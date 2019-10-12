@@ -10,9 +10,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".CorrectViewActivity"
+            android:label="@string/title_activity_correct_view"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ViewCardActivity"
+            android:label="@string/title_activity_view_card"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".AddCardActivity"
             android:label="@string/title_activity_add_card"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

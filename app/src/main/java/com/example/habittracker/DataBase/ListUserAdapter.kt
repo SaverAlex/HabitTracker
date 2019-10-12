@@ -2,13 +2,16 @@ package com.example.habittracker.DataBase
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.EditText
+import androidx.core.content.ContextCompat.startActivity
 import com.example.habittracker.MainActivity
 import com.example.habittracker.R
+import com.example.habittracker.ViewCardActivity
 import kotlinx.android.synthetic.main.row_layout.view.*
 
 class ListUserAdapter (internal var activity: Activity,
@@ -26,7 +29,10 @@ class ListUserAdapter (internal var activity: Activity,
         rowView.txt_row_name.text = users[position].name.toString()
 
         rowView.setOnClickListener{
-            //edt_name.setText(rowView.txt_row_name.text.toString())
+            val intent = Intent(activity,ViewCardActivity::class.java)
+            intent.putExtra(ViewCardActivity.positionNumber, position)
+            activity.startActivityForResult(intent,0)
+            activity.recreate()
         }
 
         return rowView
