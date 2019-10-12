@@ -38,7 +38,6 @@
         app:layout_constraintTop_toBottomOf="@+id/addCard.name" />
 
     <Button
-        android:onClick="saveMe"
         android:id="@+id/addCard.save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,6 +45,22 @@
         android:layout_marginTop="18dp"
         android:text="Сохранить"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addCard.period" />
+
+    <EditText
+        android:id="@+id/addCard.period"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:ems="10"
+        android:hint="Период"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addCard.description" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

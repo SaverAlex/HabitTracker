@@ -7,15 +7,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
+import com.example.habittracker.DataBase.DBHelper
+import com.example.habittracker.DataBase.ListUserAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_add_card.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        refreshData()
 
 //        fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -23,9 +31,26 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
+
+
     fun addCard(view: View){
         val card = Intent(this, AddCardActivity::class.java)
-        startActivity(card)
+        startActivityForResult(card,0)
+    }
+
+    private fun refreshData(){
+        var db = DBHelper(this)
+        var users = db.allUser
+        var adapter = ListUserAdapter(this,users)
+        mainList.adapter = adapter
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data == null){
+            return
+        }
+        refreshData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
