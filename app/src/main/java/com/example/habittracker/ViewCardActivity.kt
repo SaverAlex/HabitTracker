@@ -45,7 +45,7 @@ class ViewCardActivity : AppCompatActivity() {
 
     private fun showCard() {
         users = db.allUser
-        position = intent.getIntExtra(ID,0)
+        position = intent.getIntExtra(positionNumber,0)
         viewCard_name.text = users[position].name
         viewCard_description.text = getString(R.string.view_card_description,users[position].description)
         viewCard_period.text = getString(R.string.view_card_period,users[position].period)
