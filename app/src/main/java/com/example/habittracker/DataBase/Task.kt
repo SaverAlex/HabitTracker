@@ -1,6 +1,6 @@
 package com.example.habittracker.DataBase
 
-class User {
+class Task {
     var id:Int = 0
     var name:String? = null
     var description:String? = null

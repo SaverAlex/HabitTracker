@@ -7,15 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.EditText
-import androidx.core.content.ContextCompat.startActivity
-import com.example.habittracker.MainActivity
 import com.example.habittracker.R
 import com.example.habittracker.ViewCardActivity
 import kotlinx.android.synthetic.main.row_layout.view.*
 
-class ListUserAdapter (internal var activity: Activity,
-                         internal var users:List<User>) : BaseAdapter() {
+class ListTaskAdapter (internal var activity: Activity,
+                       internal var listTasks:List<Task>) : BaseAdapter() {
 
     internal var inflater: LayoutInflater
 
@@ -26,7 +23,7 @@ class ListUserAdapter (internal var activity: Activity,
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val rowView: View
         rowView = inflater.inflate(R.layout.row_layout,null)
-        rowView.txt_row_name.text = users[position].name.toString()
+        rowView.txt_row_name.text = listTasks[position].name.toString()
 
         rowView.setOnClickListener{
             val intent = Intent(activity,ViewCardActivity::class.java)
@@ -40,15 +37,15 @@ class ListUserAdapter (internal var activity: Activity,
     }
 
     override fun getItem(position: Int): Any {
-        return users[position]
+        return listTasks[position]
     }
 
     override fun getItemId(position: Int): Long {
-        return users[position].id.toLong()
+        return listTasks[position].id.toLong()
     }
 
     override fun getCount(): Int {
-        return users.size
+        return listTasks.size
     }
 
 }

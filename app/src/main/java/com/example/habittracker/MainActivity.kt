@@ -2,17 +2,14 @@ package com.example.habittracker
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
 import com.example.habittracker.DataBase.DBHelper
-import com.example.habittracker.DataBase.ListUserAdapter
+import com.example.habittracker.DataBase.ListTaskAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_add_card.*
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -40,8 +37,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshData(){
         var db = DBHelper(this)
-        var users = db.allUser
-        var adapter = ListUserAdapter(this,users)
+        var listTasks = db.allTask
+        var adapter = ListTaskAdapter(this,listTasks)
         mainList.adapter = adapter
     }
 

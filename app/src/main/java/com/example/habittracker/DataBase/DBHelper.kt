@@ -30,51 +30,51 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
         onCreate(db!!)
     }
 
-    val allUser:List<User>
+    val allTask:List<Task>
         get() {
-            val users =  ArrayList<User>()
+            val listTasks =  ArrayList<Task>()
             val selectQuery = "SELECT * FROM $TABLE_NAME"
             val db = this.writableDatabase
             val cursor = db.rawQuery(selectQuery,null)
             if (cursor.moveToFirst()){
                 do {
-                    val user = User()
-                    user.id = cursor.getInt(cursor.getColumnIndex(COL_ID))
-                    user.name = cursor.getString(cursor.getColumnIndex(COL_NAME))
-                    user.description = cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION))
-                    user.period = cursor.getInt(cursor.getColumnIndex(COL_PERIOD))
+                    val task = Task()
+                    task.id = cursor.getInt(cursor.getColumnIndex(COL_ID))
+                    task.name = cursor.getString(cursor.getColumnIndex(COL_NAME))
+                    task.description = cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION))
+                    task.period = cursor.getInt(cursor.getColumnIndex(COL_PERIOD))
 
-                    users.add(user)
+                    listTasks.add(task)
                 } while (cursor.moveToNext())
             }
             db.close()
-            return users
+            return listTasks
         }
 
-    fun addUser(user: User){
+    fun addUser(task: Task){
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(COL_ID, user.id)
-        values.put(COL_NAME, user.name)
-        values.put(COL_DESCRIPTION, user.description)
-        values.put(COL_PERIOD, user.period)
+        values.put(COL_ID, task.id)
+        values.put(COL_NAME, task.name)
+        values.put(COL_DESCRIPTION, task.description)
+        values.put(COL_PERIOD, task.period)
         db.insert(TABLE_NAME,null,values)
         db.close()
     }
 
-    fun updateUser(user: User): Int{
+    fun updateUser(task: Task): Int{
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(COL_ID, user.id)
-        values.put(COL_NAME, user.name)
-        values.put(COL_DESCRIPTION, user.description)
-        values.put(COL_PERIOD, user.period)
-        return db.update(TABLE_NAME,values,"$COL_ID=?", arrayOf(user.id.toString()))
+        values.put(COL_ID, task.id)
+        values.put(COL_NAME, task.name)
+        values.put(COL_DESCRIPTION, task.description)
+        values.put(COL_PERIOD, task.period)
+        return db.update(TABLE_NAME,values,"$COL_ID=?", arrayOf(task.id.toString()))
     }
 
-    fun deleteUser(user: User){
+    fun deleteUser(task: Task){
         val db = this.writableDatabase
-        db.delete(TABLE_NAME,"$COL_ID=?", arrayOf(user.id.toString()))
+        db.delete(TABLE_NAME,"$COL_ID=?", arrayOf(task.id.toString()))
         db.close()
     }
 }
