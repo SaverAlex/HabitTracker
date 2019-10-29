@@ -9,11 +9,11 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
 
     companion object{
         private val DATABASE_VER = 1
-        private val DATABASE_NAME = "userCards.db"
+        private val DATABASE_NAME = "taskCards.db"
 
         // Table
 
-        private val TABLE_NAME="UserCard"
+        private val TABLE_NAME="TaskCard"
         private val COL_ID = "ID"
         private val COL_NAME="Name"
         private val COL_DESCRIPTION="Description"

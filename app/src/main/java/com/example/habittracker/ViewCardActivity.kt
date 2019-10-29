@@ -2,13 +2,28 @@ package com.example.habittracker
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.habittracker.DataBase.DBHelper
 import com.example.habittracker.DataBase.Task
 
 import kotlinx.android.synthetic.main.activity_view_card.*
 import kotlinx.android.synthetic.main.content_view_card.*
+import kotlin.collections.ArrayList
+import androidx.recyclerview.widget.RecyclerView
+import com.jakewharton.threetenabp.AndroidThreeTen
+import com.kizitonwose.calendarview.model.*
+import com.kizitonwose.calendarview.ui.DayBinder
+import com.kizitonwose.calendarview.ui.ViewContainer
+import kotlinx.android.synthetic.main.calendar_day_layout.view.*
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
+import java.util.*
+
+
 
 class ViewCardActivity : AppCompatActivity() {
 
@@ -17,13 +32,18 @@ class ViewCardActivity : AppCompatActivity() {
     }
 
     internal lateinit var db:DBHelper
-    internal var listTasks:List<Task> = ArrayList<Task>()
+    internal var listTasks:List<Task> = ArrayList()
     internal var position = -1
+
+    private var completedDays: ArrayList<LocalDate> = ArrayList()
+    private lateinit var today:LocalDate
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_card)
         setSupportActionBar(toolbar)
+        assemblyCalendar()
 
         db = DBHelper(this)
         showCard()
@@ -40,6 +60,7 @@ class ViewCardActivity : AppCompatActivity() {
             intent.putExtra(CorrectViewActivity.positionNumber, position)
             startActivityForResult(intent,0)
         }
+
     }
 
     private fun showCard() {
@@ -48,6 +69,58 @@ class ViewCardActivity : AppCompatActivity() {
         viewCard_name.text = listTasks[position].name
         viewCard_description.text = getString(R.string.view_card_description,listTasks[position].description)
         viewCard_period.text = getString(R.string.view_card_period,listTasks[position].period)
+    }
+
+    private fun assemblyCalendar (){
+
+        AndroidThreeTen.init(this)
+        today = LocalDate.now()
+        class DayViewContainer(view: View) : ViewContainer(view) {
+            val textView = view.calendarDayText
+        }
+
+        calendarView.inDateStyle = InDateStyle.ALL_MONTHS
+        calendarView.outDateStyle = OutDateStyle.END_OF_ROW
+        calendarView.scrollMode = ScrollMode.PAGED
+        calendarView.orientation = RecyclerView.HORIZONTAL
+
+        weekMode.setOnCheckedChangeListener { _ , isChecked ->
+            if (isChecked) {
+                calendarView.maxRowCount =  1
+                calendarView.hasBoundaries = false
+            } else {
+                calendarView.maxRowCount =  6
+                calendarView.hasBoundaries =  true
+            }
+        }
+        calendarView.setup(YearMonth.now(), YearMonth.now().plusMonths(0),DayOfWeek.MONDAY)
+        calendarView.dayBinder = object : DayBinder<DayViewContainer> {
+            override fun create(view: View) = DayViewContainer(view)
+            override fun bind(container: DayViewContainer, day: CalendarDay) {
+                container.textView.text = day.date.dayOfMonth.toString()
+                if (day.owner == DayOwner.THIS_MONTH) {
+                    container.textView.setTextColor(Color.BLACK)
+                } else {
+                    container.textView.setTextColor(Color.LTGRAY)
+                }
+                when{
+                    today == day.date -> {
+                        flag.setOnClickListener {
+                            flag.text = "Выполнено"
+                            flag.setBackgroundColor(Color.GREEN)
+                            container.textView.setBackgroundColor(Color.GREEN)
+                            completedDays.add(day.date)
+                        }
+                    }
+                    completedDays.contains(day.date) -> {
+                        container.textView.setTextColor(Color.RED)
+                        container.textView.setBackgroundColor(Color.DKGRAY)
+                    }
+                }
+
+            }
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -61,3 +134,6 @@ class ViewCardActivity : AppCompatActivity() {
     }
 
 }
+
+
+
