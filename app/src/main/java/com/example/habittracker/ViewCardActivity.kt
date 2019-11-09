@@ -103,7 +103,12 @@ class ViewCardActivity : AppCompatActivity() {
                 }
                 when{
                     completedDays.contains(day.date) -> {
-                        container.textView.setBackgroundResource(R.drawable.continuous_selected_bg_middle)
+                        container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,listTasks[position].period))
+                        if (today.dayOfYear >= completedDays[0].dayOfYear + listTasks[position].period) {
+                            //flag.visibility = View.GONE
+                            flag.text = "Период завершён"
+                            flag.isEnabled = false
+                        }
                         if (today == day.date){
                             flag.text = "Выполнено"
                             flag.setBackgroundColor(getColor(R.color.colorToolbar))
@@ -114,11 +119,16 @@ class ViewCardActivity : AppCompatActivity() {
                             flag.text = "Выполнено"
                             flag.setBackgroundColor(getColor(R.color.colorToolbar))
 
-                            container.textView.setBackgroundResource(R.drawable.continuous_selected_bg_middle)
                             completedDays.add(day.date)
+                            container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,listTasks[position].period))
                             val task = Task(listTasks[position].id,listTasks[position].name,listTasks[position].description,listTasks[position].period,
                                 DateArray.serialization(completedDays))
                             db.updateTask(task)
+                        }
+                    }
+                    day.date.dayOfYear < today.dayOfYear -> {
+                        if (completedDays.isNotEmpty() && (completedDays[0].dayOfYear < day.date.dayOfYear) && flag.isEnabled){
+                            container.textView.setBackgroundColor(Color.RED)
                         }
                     }
 
