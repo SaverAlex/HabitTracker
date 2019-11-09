@@ -9,7 +9,7 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
 
     companion object{
         private val DATABASE_VER = 1
-        private val DATABASE_NAME = "taskCards.db"
+        private val DATABASE_NAME = "tasksDB.db"
 
         // Table
 
@@ -18,10 +18,12 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
         private val COL_NAME="Name"
         private val COL_DESCRIPTION="Description"
         private val COL_PERIOD="Period"
+
+        private val COL_COMPLETEDDAYS = "completedDays"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val CREATE_TABLE_QUERY:String = ("CREATE TABLE $TABLE_NAME ($COL_ID INTEGER PRIMARY KEY, $COL_NAME TEXT, $COL_DESCRIPTION TEXT, $COL_PERIOD INTEGER)")
+        val CREATE_TABLE_QUERY:String = ("CREATE TABLE $TABLE_NAME ($COL_ID INTEGER PRIMARY KEY, $COL_NAME TEXT, $COL_DESCRIPTION TEXT, $COL_PERIOD INTEGER, $COL_COMPLETEDDAYS TEXT)")
         db!!.execSQL(CREATE_TABLE_QUERY)
     }
 
@@ -43,6 +45,7 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
                     task.name = cursor.getString(cursor.getColumnIndex(COL_NAME))
                     task.description = cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION))
                     task.period = cursor.getInt(cursor.getColumnIndex(COL_PERIOD))
+                    task.completedDays = cursor.getString(cursor.getColumnIndex(COL_COMPLETEDDAYS))
 
                     listTasks.add(task)
                 } while (cursor.moveToNext())
@@ -51,7 +54,7 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
             return listTasks
         }
 
-    fun addUser(task: Task){
+    fun addTask(task: Task){
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COL_ID, task.id)
@@ -62,17 +65,20 @@ class DBHelper(contex: Context):SQLiteOpenHelper(contex,DATABASE_NAME,null,DATAB
         db.close()
     }
 
-    fun updateUser(task: Task): Int{
+    fun updateTask(task: Task): Int{
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COL_ID, task.id)
         values.put(COL_NAME, task.name)
         values.put(COL_DESCRIPTION, task.description)
         values.put(COL_PERIOD, task.period)
+        if (task.completedDays != null) {
+            values.put(COL_COMPLETEDDAYS, task.completedDays)
+        }
         return db.update(TABLE_NAME,values,"$COL_ID=?", arrayOf(task.id.toString()))
     }
 
-    fun deleteUser(task: Task){
+    fun deleteTask(task: Task){
         val db = this.writableDatabase
         db.delete(TABLE_NAME,"$COL_ID=?", arrayOf(task.id.toString()))
         db.close()

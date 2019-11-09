@@ -21,9 +21,6 @@ import kotlinx.android.synthetic.main.calendar_day_layout.view.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
-import java.util.*
-
-
 
 class ViewCardActivity : AppCompatActivity() {
 
@@ -35,7 +32,7 @@ class ViewCardActivity : AppCompatActivity() {
     internal var listTasks:List<Task> = ArrayList()
     internal var position = -1
 
-    private var completedDays: ArrayList<LocalDate> = ArrayList()
+    private var completedDays: ArrayList<LocalDate> = ArrayList() // Необходимо хранить в БД
     private lateinit var today:LocalDate
 
 
@@ -43,14 +40,15 @@ class ViewCardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_card)
         setSupportActionBar(toolbar)
-        assemblyCalendar()
 
         db = DBHelper(this)
         showCard()
+        completedDays = DateArray.deserialize(listTasks[position].completedDays)
+        assemblyCalendar()
 
         delete.setOnClickListener{
-            val user = Task(listTasks[position].id,listTasks[position].name,listTasks[position].description,listTasks[position].period)
-            db.deleteUser(user)
+            val task = Task(listTasks[position].id,listTasks[position].name,listTasks[position].description,listTasks[position].period,null)
+            db.deleteTask(task)
             var intent = Intent()
             setResult(Activity.RESULT_OK,intent)
             finish()
@@ -104,18 +102,26 @@ class ViewCardActivity : AppCompatActivity() {
                     container.textView.setTextColor(Color.LTGRAY)
                 }
                 when{
+                    completedDays.contains(day.date) -> {
+                        container.textView.setBackgroundResource(R.drawable.continuous_selected_bg_middle)
+                        if (today == day.date){
+                            flag.text = "Выполнено"
+                            flag.setBackgroundColor(getColor(R.color.colorToolbar))
+                        }
+                    }
                     today == day.date -> {
                         flag.setOnClickListener {
                             flag.text = "Выполнено"
-                            flag.setBackgroundColor(Color.GREEN)
-                            container.textView.setBackgroundColor(Color.GREEN)
+                            flag.setBackgroundColor(getColor(R.color.colorToolbar))
+
+                            container.textView.setBackgroundResource(R.drawable.continuous_selected_bg_middle)
                             completedDays.add(day.date)
+                            val task = Task(listTasks[position].id,listTasks[position].name,listTasks[position].description,listTasks[position].period,
+                                DateArray.serialization(completedDays))
+                            db.updateTask(task)
                         }
                     }
-                    completedDays.contains(day.date) -> {
-                        container.textView.setTextColor(Color.RED)
-                        container.textView.setBackgroundColor(Color.DKGRAY)
-                    }
+
                 }
 
             }

@@ -22,8 +22,8 @@ class AddCardActivity : AppCompatActivity() {
         db = DBHelper(this)
 
         addCard_save.setOnClickListener{
-            val task = Task(addCard_name.text.toString().hashCode(),addCard_name.text.toString(),addCard_description.text.toString(),Integer.parseInt(addCard_period.text.toString()))
-            db.addUser(task)
+            val task = Task(addCard_name.text.toString().hashCode(),addCard_name.text.toString(),addCard_description.text.toString(),Integer.parseInt(addCard_period.text.toString()),null)
+            db.addTask(task)
             var intent = Intent()
             setResult(Activity.RESULT_OK,intent)
             finish()

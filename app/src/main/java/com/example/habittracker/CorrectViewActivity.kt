@@ -31,8 +31,8 @@ class CorrectViewActivity : AppCompatActivity() {
         save.setOnClickListener{
             val task = Task(listTasks[position].id,correctView_name.getText().toString(),
                 correctView_description.getText().toString(),
-                listTasks[position].period)
-            db.updateUser(task)
+                listTasks[position].period,null)
+            db.updateTask(task)
             var intent = Intent()
             setResult(Activity.RESULT_OK,intent)
             finish()
