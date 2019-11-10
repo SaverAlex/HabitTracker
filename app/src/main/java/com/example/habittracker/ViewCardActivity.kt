@@ -90,6 +90,10 @@ class ViewCardActivity : AppCompatActivity() {
                 calendarView.hasBoundaries = false
                 resultView.visibility = View.VISIBLE
                 if (completedDays.isNotEmpty()) {
+                    daysPassed = if (completedDays[0].dayOfYear + listTasks[position].period <= today.dayOfYear)
+                        completedDays[completedDays.size - 1].dayOfYear - completedDays[0].dayOfYear + 1
+                    else
+                        today.dayOfYear - completedDays[0].dayOfYear + 1
                     resultView.text = AnalyzeProgress.start(
                         listTasks[position].period,
                         completedDays.size,
@@ -103,7 +107,9 @@ class ViewCardActivity : AppCompatActivity() {
                 resultView.visibility = View.INVISIBLE
             }
         }
-        calendarView.setup(YearMonth.now(), YearMonth.now().plusMonths(0),DayOfWeek.MONDAY)
+        var numberOfMonths = 0
+        if (completedDays.isNotEmpty()) numberOfMonths = (completedDays[0].dayOfMonth + listTasks[position].period) / 30
+        calendarView.setup(YearMonth.now(), YearMonth.now().plusMonths(numberOfMonths.toLong()),DayOfWeek.MONDAY)
         calendarView.dayBinder = object : DayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
             override fun bind(container: DayViewContainer, day: CalendarDay) {
@@ -127,7 +133,7 @@ class ViewCardActivity : AppCompatActivity() {
                     }
                     today == day.date -> {
                         flag.setOnClickListener {
-                            daysPassed++;
+                            daysPassed++
                             if (daysPassed < listTasks[position].period) flag.text = "Выполнено"
                             else flag.text = "Период завершён"
                             flag.isEnabled = false

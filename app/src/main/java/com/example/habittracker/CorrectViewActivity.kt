@@ -41,7 +41,7 @@ class CorrectViewActivity : AppCompatActivity() {
 
     private fun showCard() {
         listTasks = db.allTask
-        position = intent.getIntExtra(Build.ID,0)
+        position = intent.getIntExtra(positionNumber,0)
         correctView_name.setText(listTasks[position].name)
         correctView_description.setText(listTasks[position].description)
     }
