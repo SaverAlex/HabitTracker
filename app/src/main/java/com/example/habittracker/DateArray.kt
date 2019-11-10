@@ -32,7 +32,7 @@ object DateArray {
             if (it == day.date){
                 if (period == 1) return R.drawable.single_selected_bg
                 if (i == 0) return R.drawable.continuous_selected_bg_start
-                if (i == period - 1) return R.drawable.continuous_selected_bg_end
+                if (completedDays[0].dayOfYear + period == day.date.dayOfYear + 1) return R.drawable.continuous_selected_bg_end
                 if (completedDays[i].dayOfMonth == day.date.dayOfMonth - 1){
                     return R.drawable.continuous_selected_bg_middle
                 }

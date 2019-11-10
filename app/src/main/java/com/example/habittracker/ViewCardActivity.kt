@@ -34,6 +34,7 @@ class ViewCardActivity : AppCompatActivity() {
 
     private var completedDays: ArrayList<LocalDate> = ArrayList() // Необходимо хранить в БД
     private lateinit var today:LocalDate
+    private var daysPassed = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +74,7 @@ class ViewCardActivity : AppCompatActivity() {
 
         AndroidThreeTen.init(this)
         today = LocalDate.now()
+        if (completedDays.isNotEmpty()) daysPassed = today.dayOfYear - completedDays[0].dayOfYear
         class DayViewContainer(view: View) : ViewContainer(view) {
             val textView = view.calendarDayText
         }
@@ -91,7 +93,7 @@ class ViewCardActivity : AppCompatActivity() {
                     resultView.text = AnalyzeProgress.start(
                         listTasks[position].period,
                         completedDays.size,
-                        today.dayOfYear - completedDays[0].dayOfYear + 1
+                        daysPassed
                     )
                 }
                 else resultView.text = "У тебя пока никаких результатов нет"
@@ -114,19 +116,20 @@ class ViewCardActivity : AppCompatActivity() {
                 when{
                     completedDays.contains(day.date) -> {
                         container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,listTasks[position].period))
-                        if (today.dayOfYear >= completedDays[0].dayOfYear + listTasks[position].period) {
-                            //flag.visibility = View.GONE
-                            flag.text = "Период завершён"
-                            flag.isEnabled = false
-                        }
                         if (today == day.date){
                             flag.text = "Выполнено"
+                            flag.isEnabled = false
+                        }
+                        if ((today.dayOfYear + 1 >= completedDays[0].dayOfYear + listTasks[position].period) || (daysPassed >= listTasks[position].period)) {
+                            flag.text = "Период завершён"
                             flag.isEnabled = false
                         }
                     }
                     today == day.date -> {
                         flag.setOnClickListener {
-                            flag.text = "Выполнено"
+                            daysPassed++;
+                            if (daysPassed < listTasks[position].period) flag.text = "Выполнено"
+                            else flag.text = "Период завершён"
                             flag.isEnabled = false
 
                             completedDays.add(day.date)
@@ -137,7 +140,7 @@ class ViewCardActivity : AppCompatActivity() {
                         }
                     }
                     day.date.dayOfYear < today.dayOfYear -> {
-                        if (completedDays.isNotEmpty() && (completedDays[0].dayOfYear < day.date.dayOfYear) && flag.isEnabled){
+                        if (completedDays.isNotEmpty() && (completedDays[0].dayOfYear < day.date.dayOfYear) && daysPassed < listTasks[position].period){
                             container.textView.setBackgroundColor(Color.RED)
                         }
                     }
