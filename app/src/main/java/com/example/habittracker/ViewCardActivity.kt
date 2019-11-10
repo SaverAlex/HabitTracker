@@ -86,9 +86,19 @@ class ViewCardActivity : AppCompatActivity() {
             if (isChecked) {
                 calendarView.maxRowCount =  1
                 calendarView.hasBoundaries = false
+                resultView.visibility = View.VISIBLE
+                if (completedDays.isNotEmpty()) {
+                    resultView.text = AnalyzeProgress.start(
+                        listTasks[position].period,
+                        completedDays.size,
+                        today.dayOfYear - completedDays[0].dayOfYear + 1
+                    )
+                }
+                else resultView.text = "У тебя пока никаких результатов нет"
             } else {
                 calendarView.maxRowCount =  6
                 calendarView.hasBoundaries =  true
+                resultView.visibility = View.INVISIBLE
             }
         }
         calendarView.setup(YearMonth.now(), YearMonth.now().plusMonths(0),DayOfWeek.MONDAY)
@@ -111,13 +121,13 @@ class ViewCardActivity : AppCompatActivity() {
                         }
                         if (today == day.date){
                             flag.text = "Выполнено"
-                            flag.setBackgroundColor(getColor(R.color.colorToolbar))
+                            flag.isEnabled = false
                         }
                     }
                     today == day.date -> {
                         flag.setOnClickListener {
                             flag.text = "Выполнено"
-                            flag.setBackgroundColor(getColor(R.color.colorToolbar))
+                            flag.isEnabled = false
 
                             completedDays.add(day.date)
                             container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,listTasks[position].period))
