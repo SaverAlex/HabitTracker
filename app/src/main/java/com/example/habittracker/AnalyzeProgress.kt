@@ -3,7 +3,7 @@ package com.example.habittracker
 object AnalyzeProgress {
     fun start (period: Int, completedDays: Int, passedDays: Int): String{
 
-        var overallProgress = ((passedDays.toDouble() / period) * 100).toInt()
+        var overallProgress = ((completedDays.toDouble() / period) * 100).toInt()
         var currentProgress = ((completedDays.toDouble() / passedDays) * 100).toInt()
         var result = "Общий прогресс: $overallProgress%\n"
         if (completedDays + passedDays > period){

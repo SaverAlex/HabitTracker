@@ -32,6 +32,11 @@ class ViewCardActivity : AppCompatActivity() {
     internal var listTasks:List<Task> = ArrayList()
     internal var position = -1
 
+    private var id: Int = -1
+    private var name: String? = null
+    private var description: String? = null
+    private var period: Int = -1
+
     private var completedDays: ArrayList<LocalDate> = ArrayList() // Необходимо хранить в БД
     private lateinit var today:LocalDate
     private var daysPassed = 0
@@ -48,7 +53,7 @@ class ViewCardActivity : AppCompatActivity() {
         assemblyCalendar()
 
         delete.setOnClickListener{
-            val task = Task(listTasks[position].id,listTasks[position].name,listTasks[position].description,listTasks[position].period,null)
+            val task = Task(id,name,description,period,null)
             db.deleteTask(task)
             var intent = Intent()
             setResult(Activity.RESULT_OK,intent)
@@ -65,9 +70,15 @@ class ViewCardActivity : AppCompatActivity() {
     private fun showCard() {
         listTasks = db.allTask
         position = intent.getIntExtra(positionNumber,0)
+
+        id = listTasks[position].id
+        name = listTasks[position].name
+        description = listTasks[position].description
+        period = listTasks[position].period
+
         viewCard_name.text = listTasks[position].name
-        viewCard_description.text = getString(R.string.view_card_description,listTasks[position].description)
-        viewCard_period.text = getString(R.string.view_card_period,listTasks[position].period)
+        viewCard_description.text = getString(R.string.view_card_description,description)
+        viewCard_period.text = getString(R.string.view_card_period,period)
     }
 
     private fun assemblyCalendar (){
@@ -90,12 +101,12 @@ class ViewCardActivity : AppCompatActivity() {
                 calendarView.hasBoundaries = false
                 resultView.visibility = View.VISIBLE
                 if (completedDays.isNotEmpty()) {
-                    daysPassed = if (completedDays[0].dayOfYear + listTasks[position].period <= today.dayOfYear)
+                    daysPassed = if (completedDays[0].dayOfYear + period <= today.dayOfYear)
                         completedDays[completedDays.size - 1].dayOfYear - completedDays[0].dayOfYear + 1
                     else
                         today.dayOfYear - completedDays[0].dayOfYear + 1
                     resultView.text = AnalyzeProgress.start(
-                        listTasks[position].period,
+                        period,
                         completedDays.size,
                         daysPassed
                     )
@@ -108,7 +119,7 @@ class ViewCardActivity : AppCompatActivity() {
             }
         }
         var numberOfMonths = 0
-        if (completedDays.isNotEmpty()) numberOfMonths = (completedDays[0].dayOfMonth + listTasks[position].period) / 30
+        if (completedDays.isNotEmpty()) numberOfMonths = (completedDays[0].dayOfMonth + period) / 30
         calendarView.setup(YearMonth.now(), YearMonth.now().plusMonths(numberOfMonths.toLong()),DayOfWeek.MONDAY)
         calendarView.dayBinder = object : DayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
@@ -121,12 +132,13 @@ class ViewCardActivity : AppCompatActivity() {
                 }
                 when{
                     completedDays.contains(day.date) -> {
-                        container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,listTasks[position].period))
+                        container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,period))
                         if (today == day.date){
                             flag.text = "Выполнено"
                             flag.isEnabled = false
                         }
-                        if ((today.dayOfYear + 1 >= completedDays[0].dayOfYear + listTasks[position].period) || (daysPassed >= listTasks[position].period)) {
+                        if ((today.dayOfYear >= completedDays[0].dayOfYear + period) || (daysPassed >= period)) {
+                            // В день окончания плашка всё равно отображает Выполнено
                             flag.text = "Период завершён"
                             flag.isEnabled = false
                         }
@@ -134,19 +146,20 @@ class ViewCardActivity : AppCompatActivity() {
                     today == day.date -> {
                         flag.setOnClickListener {
                             daysPassed++
-                            if (daysPassed < listTasks[position].period) flag.text = "Выполнено"
+                            if (daysPassed < period) flag.text = "Выполнено"
                             else flag.text = "Период завершён"
                             flag.isEnabled = false
 
                             completedDays.add(day.date)
-                            container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,listTasks[position].period))
-                            val task = Task(listTasks[position].id,listTasks[position].name,listTasks[position].description,listTasks[position].period,
+                            container.textView.setBackgroundResource(DateArray.drawableRes(completedDays,day,period))
+                            val task = Task(id,name,description,period,
                                 DateArray.serialization(completedDays))
                             db.updateTask(task)
                         }
                     }
                     day.date.dayOfYear < today.dayOfYear -> {
-                        if (completedDays.isNotEmpty() && (completedDays[0].dayOfYear < day.date.dayOfYear) && daysPassed < listTasks[position].period){
+                        // Не происходит окрашивание в красный цвет после периода окончания
+                        if (completedDays.isNotEmpty() && (completedDays[0].dayOfYear < day.date.dayOfYear) && daysPassed < period){
                             container.textView.setBackgroundColor(Color.RED)
                         }
                     }
